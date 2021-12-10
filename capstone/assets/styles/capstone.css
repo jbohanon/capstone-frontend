@@ -1,0 +1,39 @@
+.centered {
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.charts {
+    flex-direction: row;
+}
+
+div {
+    padding: 5px;
+    border-radius: 5px;
+}
+
+body {
+    font: 16px Helvetica;
+    display: flex;
+    flex-direction: column;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px;
+    background: #ddd;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font: 14px Sans-Serif;
+    font-weight: 700;
+}
+
+* {
+     box-sizing: border-box;
+     margin: 3px;
+ }

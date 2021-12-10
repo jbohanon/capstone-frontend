@@ -1,0 +1,31 @@
+{{define "homepage"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Capstone Wikibooks Recommendation Tool</title>
+        <script>
+            const addrRoot = {{.addrRoot}}
+        </script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/jquery.min.js"></script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/echarts.min.js"></script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/capstone.js"></script>
+        <link rel="stylesheet" href="{{.addrRoot}}/capstone/assets/styles/capstone.css">
+    </head>
+    <body>
+    <div id="charts" class="centered" style="flex-direction: row">
+        <div id="word-count-chart"></div>
+        <div id="chapter-count-chart"></div>
+        <div id="link-count-chart"></div>
+    </div>
+    <div id="mainDiv">
+        <div id="searchDiv" class="centered">
+            <label for="wikibook-search-text">Search by word:</label>
+            <input id="wikibook-search-text">
+            <button id="wikibook-search-btn" class="button">GO</button>
+        </div>
+        <br>
+        <span id="result-span" class="centered" style="flex-direction: column"></span>
+    </div>
+    </body>
+    </html>
+{{end}}
