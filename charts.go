@@ -42,56 +42,7 @@ func (s xys) ySeries() []int {
 	return ys
 }
 
-func (s xys) calculateLSR() func(x float64) (y float64) {
-	xSum := 0.0
-	ySum := 0.0
-	xSqSum := 0.0
-	xySum := 0.0
-
-	xs := s.xSeries()
-	ys := s.ySeries()
-
-	for i, x := range xs {
-		xSum += float64(x)
-		ySum += float64(ys[i])
-		xSqSum += float64(x*x)
-		xySum += float64(x*ys[i])
-	}
-
-	// https://www.mathsisfun.com/data/least-squares-regression.html
-	// y = mx + b
-	//
-	// m = mNumerator / mDenominator
-	// mNumerator = n*xySum - xSum*ySum
-	// mDenominator = n*xSqSum - xSum^2
-	//
-	// b = (ySum - m*xSum) / n
-
-
-	n := float64(len(s))
-
-	return func(x float64) (y float64) {
-		m := (n*xySum - xSum*ySum)/(n*xSqSum - xSum*xSum)
-		b := (ySum - m*xSum) / n
-
-		return m*x + b
-	}
-}
-
 func prescriptiveScatter(c echo.Context, data xys) error {
-	/*scatter := charts.NewScatter()
-	scatter.Initialization.Width = "750px"
-	scatter.Renderer = newSnippetRenderer(scatter, c, scatter.Validate)
-
-	scatter.AddJSFuncs("function initRegression() {echarts.registerTransform(ecStat.transform.regression);}")
-
-	scatter.SetGlobalOptions(
-		charts.WithTitleOpts(opts.Title{ Title: "External Links as a Function of Unique Token Count" }),
-		charts.WithXAxisOpts(opts.XAxis{
-			Type:        "value",
-			Show:        true,
-		}),
-	)*/
 
 	sort.Slice(data, func(i, j int) bool {
 		if data[i].x == data[j].x {
@@ -101,23 +52,13 @@ func prescriptiveScatter(c echo.Context, data xys) error {
 	})
 	xs := data.xSeries()
 	ys := data.ySeries()
-	/*lsr := data.calculateLSR()
-	lsrData := make([]opts.ScatterData, len(ys), len(ys))
-	sd := make([]opts.ScatterData, len(ys), len(ys))*/
-	/*min := 1000
-	max := 0*/
 	var ret [][]int
 	for i, y := range ys {
 		ret = append(ret, []int{xs[i], y})
-		/*if xs[i] < min {min = xs[i]}
-		if xs[i] > max {max = xs[i]}
-		sd[i] = opts.ScatterData{Value: y}
-		lsrData[i] = opts.ScatterData{Value: lsr(float64(xs[i]))}*/
 	}
 
 	return c.JSON(http.StatusOK, ret)
-	/*scatter.SetXAxis(data.xSeries()).AddSeries("Links by Unique Token Count", sd).AddSeries("Regression Line", lsrData, charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
-	return scatter.Render(bytes.NewBuffer([]byte{}))*/
+
 }
 
 func distributionBarChart(c echo.Context, data []int, title, subtitle, seriesName string) error {
@@ -149,19 +90,19 @@ func processIntData(lengths []int) ([]opts.BarData, []int, basicStats) {
 		switch i {
 		case len(lengths) * 99 / 100:
 			{
-				st.ninetyninth = v//m[v]
+				st.ninetyninth = v
 			}
 		case len(lengths) * 90 / 100:
 			{
-				st.ninetieth = v//m[v]
+				st.ninetieth = v
 			}
 		case len(lengths) * 75 / 100:
 			{
-				st.seventyfifth = v//m[v]
+				st.seventyfifth = v
 			}
 		case len(lengths) * 50 / 100:
 			{
-				st.median = v//m[v]
+				st.median = v
 			}
 		}
 		runningSum += m[v]
