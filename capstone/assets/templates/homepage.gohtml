@@ -7,24 +7,45 @@
             const addrRoot = {{.addrRoot}}
         </script>
         <script src="{{.addrRoot}}/capstone/assets/scripts/jquery.min.js"></script>
-        <script src="{{.addrRoot}}/capstone/assets/scripts/echarts.min.js"></script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/echarts.js"></script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/ecStat.js"></script>
         <script src="{{.addrRoot}}/capstone/assets/scripts/capstone.js"></script>
+        <script src="{{.addrRoot}}/capstone/assets/scripts/prescriptive.js"></script>
         <link rel="stylesheet" href="{{.addrRoot}}/capstone/assets/styles/capstone.css">
     </head>
     <body>
-    <div id="charts" class="centered" style="flex-direction: row">
-        <div id="word-count-chart"></div>
-        <div id="chapter-count-chart"></div>
-        <div id="link-count-chart"></div>
-    </div>
-    <div id="mainDiv">
-        <div id="searchDiv" class="centered">
-            <label for="wikibook-search-text">Search by word:</label>
-            <input id="wikibook-search-text">
-            <button id="wikibook-search-btn" class="button">GO</button>
+    <div id="mainDiv" class="centered" style="flex-direction: column">
+        <h1>Capstone: Wikibooks Recommendations & Similarity</h1>
+        <div id="searchDiv" class="centered" style="flex-direction: column">
+            <div id="search-input-div" class="centered" style="flex-direction: row">
+                <label for="wikibook-search-text">Search by word:</label>
+                <input id="wikibook-search-text">
+                <button id="wikibook-search-btn" class="button">GO</button>
+            </div>
+            <div id="search-results-div" class="centered hidden" style="flex-direction: column">
+                <h2 class="centered" id="search-results-title"></h2>
+                <div class="scrollBox">
+                    <div id="searchDisablable">
+                        <span id="result-span" class="centered" style="flex-direction: column"></span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br>
-        <span id="result-span" class="centered" style="flex-direction: column"></span>
+        <div id="similarityDiv" class="centered hidden" style="flex-direction: column">
+            <h2 class="centered" id="similarity-results-title"></h2>
+            <br>
+            <div class="scrollBox">
+                <div id="similarityDisablable">
+                    <span id="similar-docs-span" class="centered" style="flex-direction: column"></span>
+                </div>
+            </div>
+        </div>
+        <div id="charts" class="centered" style="flex-direction: row">
+            <div id="word-count-chart"></div>
+            <div id="chapter-count-chart"></div>
+            <div id="link-count-chart"></div>
+            <div id="prescriptive-chart" style="width: 750px;height:500px;"></div>
+        </div>
     </div>
     </body>
     </html>

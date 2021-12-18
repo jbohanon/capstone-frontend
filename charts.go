@@ -14,14 +14,115 @@ import (
 	"strconv"
 )
 
-type basicStats struct {
-	min, max, median, ninetyninth, ninetieth, seventyfifth int
-	mean float64
+type (
+	basicStats struct {
+		min, max, median, ninetyninth, ninetieth, seventyfifth int
+		mean float64
+	}
+	xy struct {
+		x int `bson:"count_unique_words"`
+		y int `bson:"count_external_links"`
+	}
+	xys []xy
+)
+
+func (s xys) xSeries() []int {
+	xs := make([]int, len(s), len(s))
+	for i, v := range s {
+		xs[i] = v.x
+	}
+	return xs
+}
+
+func (s xys) ySeries() []int {
+	ys := make([]int, len(s), len(s))
+	for i, v := range s {
+		ys[i] = v.y
+	}
+	return ys
+}
+
+func (s xys) calculateLSR() func(x float64) (y float64) {
+	xSum := 0.0
+	ySum := 0.0
+	xSqSum := 0.0
+	xySum := 0.0
+
+	xs := s.xSeries()
+	ys := s.ySeries()
+
+	for i, x := range xs {
+		xSum += float64(x)
+		ySum += float64(ys[i])
+		xSqSum += float64(x*x)
+		xySum += float64(x*ys[i])
+	}
+
+	// https://www.mathsisfun.com/data/least-squares-regression.html
+	// y = mx + b
+	//
+	// m = mNumerator / mDenominator
+	// mNumerator = n*xySum - xSum*ySum
+	// mDenominator = n*xSqSum - xSum^2
+	//
+	// b = (ySum - m*xSum) / n
+
+
+	n := float64(len(s))
+
+	return func(x float64) (y float64) {
+		m := (n*xySum - xSum*ySum)/(n*xSqSum - xSum*xSum)
+		b := (ySum - m*xSum) / n
+
+		return m*x + b
+	}
+}
+
+func prescriptiveScatter(c echo.Context, data xys) error {
+	/*scatter := charts.NewScatter()
+	scatter.Initialization.Width = "750px"
+	scatter.Renderer = newSnippetRenderer(scatter, c, scatter.Validate)
+
+	scatter.AddJSFuncs("function initRegression() {echarts.registerTransform(ecStat.transform.regression);}")
+
+	scatter.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{ Title: "External Links as a Function of Unique Token Count" }),
+		charts.WithXAxisOpts(opts.XAxis{
+			Type:        "value",
+			Show:        true,
+		}),
+	)*/
+
+	sort.Slice(data, func(i, j int) bool {
+		if data[i].x == data[j].x {
+			return data[i].y < data[j].y
+		}
+		return data[i].x < data[j].x
+	})
+	xs := data.xSeries()
+	ys := data.ySeries()
+	/*lsr := data.calculateLSR()
+	lsrData := make([]opts.ScatterData, len(ys), len(ys))
+	sd := make([]opts.ScatterData, len(ys), len(ys))*/
+	/*min := 1000
+	max := 0*/
+	var ret [][]int
+	for i, y := range ys {
+		ret = append(ret, []int{xs[i], y})
+		/*if xs[i] < min {min = xs[i]}
+		if xs[i] > max {max = xs[i]}
+		sd[i] = opts.ScatterData{Value: y}
+		lsrData[i] = opts.ScatterData{Value: lsr(float64(xs[i]))}*/
+	}
+
+	return c.JSON(http.StatusOK, ret)
+	/*scatter.SetXAxis(data.xSeries()).AddSeries("Links by Unique Token Count", sd).AddSeries("Regression Line", lsrData, charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
+	return scatter.Render(bytes.NewBuffer([]byte{}))*/
 }
 
 func distributionBarChart(c echo.Context, data []int, title, subtitle, seriesName string) error {
 	bar := charts.NewBar()
-	bar.Initialization.Width = "550px"
+	bar.Initialization.Width = "750px"
 	bar.Renderer = newSnippetRenderer(bar, c, bar.Validate)
 
 	bd, x, st := processIntData(data)
